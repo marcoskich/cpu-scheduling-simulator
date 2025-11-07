@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simulador de Escalonamento — 3 Grades (FCFS • SJF • RR) + Fila RR</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  
+</head>
+<body class="bg-slate-50">
+  <div class="max-w-6xl mx-auto p-4 space-y-6">
+    <header class="space-y-2">
+      <h1 class="text-2xl font-bold">Simulador de Escalonamento <span class="text-slate-500">(FCFS • SJF • RR)</span></h1>
+      <p class="text-sm md:text-base text-slate-700 max-w-4xl">
+        <b>Objetivo:</b> preencher a grade <b>X/W</b> (<b>x</b> = executando, <b>w</b> = esperando) para cada processo ao longo do tempo e calcular
+        <b>Espera total</b> (soma de <b>w</b>) e <b>Turnaround</b> (término − chegada). Em <b>Round Robin</b>, assuma <b>quantum = 1</b>, sem prioridade. Para o algoritmo
+        <b>RR</b>, em caso de coincidência entre a chegada de um novo processo e o término do quantum de outro, primeiro insira o processo que chegou na fila,
+        depois re-enfileire o que expirou.
+      </p>
+    </header>
+
+    
+
+    <!-- Processos -->
+    <section class="bg-white p-4 rounded-2xl shadow-sm border">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold">Processos</h2>
+        <button class="px-3 py-1.5 rounded bg-white border" onclick="addProc()">+ adicionar processo</button>
+      </div>
+      <div class="overflow-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="border-b text-slate-600">
+              <th class="p-2 text-left">ID</th>
+              <th class="p-2">Chegada</th>
+              <th class="p-2">Burst</th>
+              <th class="p-2">Cor</th>
+              <th class="p-2"></th>
+            </tr>
+          </thead>
+          <tbody id="proc-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FCFS -->
+    <section class="bg-white p-4 rounded-2xl shadow-sm border space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="font-semibold">FIFO (FCFS) — Grade X/W (clique para alternar)</h2>
+        <div class="flex items-center gap-2"><div class="text-sm text-slate-500">x = executando • w = esperando</div><button class="px-3 py-1.5 rounded bg-white border" onclick="clearGrade('FCFS')">Limpar grade</button></div>
+      </div>
+      <div id="grid-fcfs" class="space-y-1"></div>
+    </section>
+    <section class="bg-white p-4 rounded-2xl shadow-sm border">
+      <h3 class="font-semibold mb-2">Métricas — FCFS</h3>
+      <div class="overflow-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="border-b text-slate-600">
+              <th class="p-2 text-left">ID</th>
+              <th class="p-2">Chegada</th>
+              <th class="p-2">Burst</th>
+              <th class="p-2">Espera total</th>
+              <th class="p-2">Turnaround</th>
+            </tr>
+          </thead>
+          <tbody id="metrics-fcfs"></tbody>
+          <tfoot>
+            <tr class="border-t font-semibold">
+              <td class="p-2 text-right" colspan="3">Médias</td>
+              <td class="p-2 text-center" id="avg-w-fcfs">-</td>
+              <td class="p-2 text-center" id="avg-t-fcfs">-</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- SJF -->
+    <section class="bg-white p-4 rounded-2xl shadow-sm border space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="font-semibold">SJF — Grade X/W (clique para alternar)</h2>
+        <div class="flex items-center gap-2"><div class="text-sm text-slate-500">x = executando • w = esperando</div><button class="px-3 py-1.5 rounded bg-white border" onclick="clearGrade('SJF')">Limpar grade</button></div>
+      </div>
+      <div id="grid-sjf" class="space-y-1"></div>
+    </section>
+    <section class="bg-white p-4 rounded-2xl shadow-sm border">
+      <h3 class="font-semibold mb-2">Métricas — SJF</h3>
+      <div class="overflow-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="border-b text-slate-600">
+              <th class="p-2 text-left">ID</th>
+              <th class="p-2">Chegada</th>
+              <th class="p-2">Burst</th>
+              <th class="p-2">Espera total</th>
+              <th class="p-2">Turnaround</th>
+            </tr>
+          </thead>
+          <tbody id="metrics-sjf"></tbody>
+          <tfoot>
+            <tr class="border-t font-semibold">
+              <td class="p-2 text-right" colspan="3">Médias</td>
+              <td class="p-2 text-center" id="avg-w-sjf">-</td>
+              <td class="p-2 text-center" id="avg-t-sjf">-</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- RR -->
+    <section class="bg-white p-4 rounded-2xl shadow-sm border space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="font-semibold">RR — Grade X/W (clique para alternar)</h2>
+        <div class="flex items-center gap-2"><div class="text-sm text-slate-500">x = executando • w = esperando</div><button class="px-3 py-1.5 rounded bg-white border" onclick="clearGrade('RR')">Limpar grade</button></div>
+      </div>
+      <div id="grid-rr" class="space-y-1"></div>
+    </section>
+    <section class="bg-white p-4 rounded-2xl shadow-sm border">
+      <h3 class="font-semibold mb-2">Métricas — RR</h3>
+      <div class="overflow-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="border-b text-slate-600">
+              <th class="p-2 text-left">ID</th>
+              <th class="p-2">Chegada</th>
+              <th class="p-2">Burst</th>
+              <th class="p-2">Espera total</th>
+              <th class="p-2">Turnaround</th>
+            </tr>
+          </thead>
+          <tbody id="metrics-rr"></tbody>
+          <tfoot>
+            <tr class="border-t font-semibold">
+              <td class="p-2 text-right" colspan="3">Médias</td>
+              <td class="p-2 text-center" id="avg-w-rr">-</td>
+              <td class="p-2 text-center" id="avg-t-rr">-</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- Fila RR — Controle manual -->
+    <section class="bg-white p-4 rounded-2xl shadow-sm border">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold">Fila RR — Controle manual (por tempo)</h3>
+        <div class="flex items-center gap-2 text-xs text-slate-600">
+          <span>Topo da fila = verde (executa)</span>
+          <span>• Demais posições = laranja (esperam)</span>
+          <button class="ml-3 px-3 py-1.5 rounded bg-white border" onclick="clearRRQueue()">Limpar fila (RR)</button>
+        </div>
+      </div>
+      <p class="text-xs text-slate-600 mt-1">Clique nas células para alternar: vazio → P1 → P2 → P3 → P4 → vazio. Cada coluna representa a fila no instante <i>t</i>. Ao alterar a fila, a grade do RR é atualizada automaticamente (x para o topo, w para as demais posições).</p>
+      <div id="queue-rr-control-host" class="mt-3 space-y-1"></div>
+    </section>
+
+    <!-- Comparativo -->
+    <section class="bg-white p-4 rounded-2xl shadow-sm border">
+      <h2 class="font-semibold mb-2">Comparativo final (médias)</h2>
+      <div class="grid sm:grid-cols-3 gap-4 text-sm">
+        <div class="p-3 rounded-xl border">
+          <div class="font-semibold mb-1">FCFS</div>
+          <div>Espera média: <b id="cmp-w-fcfs">-</b></div>
+          <div>Turnaround médio: <b id="cmp-t-fcfs">-</b></div>
+        </div>
+        <div class="p-3 rounded-xl border">
+          <div class="font-semibold mb-1">SJF</div>
+          <div>Espera média: <b id="cmp-w-sjf">-</b></div>
+          <div>Turnaround médio: <b id="cmp-t-sjf">-</b></div>
+        </div>
+        <div class="p-3 rounded-xl border">
+          <div class="font-semibold mb-1">RR</div>
+          <div>Espera média: <b id="cmp-w-rr">-</b></div>
+          <div>Turnaround médio: <b id="cmp-t-rr">-</b></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-xs text-slate-500 pb-8 space-y-2">
+      <p>
+        Clique nas células para alternar <b>x → w → vazio</b>. As métricas e o comparativo são recalculados automaticamente. Para RR, a "Espera total" reporta a <b>espera inicial</b> (1º x − chegada, mínimo 0), conforme o enunciado.
+      </p>
+      <p class="text-[11px] leading-relaxed text-slate-600">
+        <b>Autor:</b> Marcos Ricardo Kich. Esta aplicação foi criada para fins didáticos na disciplina de <b>Sistemas Operacionais</b>, com o objetivo de auxiliar a compreensão do funcionamento dos algoritmos de escalonamento (FCFS, SJF e RR) por meio de visualização e experimentação interativa.
+      </p>
+    </footer>
+  </div>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
