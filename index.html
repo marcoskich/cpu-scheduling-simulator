@@ -11,10 +11,10 @@
 <body class="bg-slate-50">
   <div class="max-w-6xl mx-auto p-4 space-y-6">
     <header class="space-y-2">
-      <h1 class="text-2xl font-bold">Simulador de Escalonamento <span class="text-slate-500">(FCFS • SJF • RR)</span></h1>
+      <h1 class="text-2xl font-bold">Simulador de Escalonamento <br><span class="text-slate-500">(FCFS [não preemptivo] • SJF [não preemptivo] • RR [preemptivo por quantum])</span></h1>
       <p class="text-sm md:text-base text-slate-700 max-w-4xl">
         <b>Objetivo:</b> preencher a grade <b>X/W</b> (<b>x</b> = executando, <b>w</b> = esperando) para cada processo ao longo do tempo e calcular
-        <b>Espera total</b> (soma de <b>w</b>) e <b>Turnaround</b> (término − chegada). Em <b>Round Robin</b>, assuma <b>quantum = 1</b>, sem prioridade. Para o algoritmo
+        <b>Espera total</b> (soma de <b>w</b> até iniciar execução) e <b>Turnaround</b> (término − chegada). Em <b>Round Robin</b>, assuma <b>quantum = 1</b>, sem prioridade. Para o algoritmo
         <b>RR</b>, em caso de coincidência entre a chegada de um novo processo e o término do quantum de outro, primeiro insira o processo que chegou na fila,
         depois re-enfileire o que expirou.
       </p>
@@ -127,7 +127,7 @@
               <th class="p-2 text-left">ID</th>
               <th class="p-2">Chegada</th>
               <th class="p-2">Burst</th>
-              <th class="p-2">Espera total</th>
+              <th class="p-2">Espera até iniciar execução</th>
               <th class="p-2">Turnaround</th>
             </tr>
           </thead>
